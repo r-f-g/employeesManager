@@ -1,0 +1,57 @@
+table.zdroje {
+	position: relative;
+	overflow: hidden;
+}
+table.zdroje th {
+	text-align: center;
+	border-top: 1px solid #ddd;
+}
+table.zdroje td {
+	text-align: center;
+	border-top: 1px solid #ddd;
+}
+table.zdroje thead {
+	position: relative;
+	display: block;
+ 	overflow: visible;
+}
+table.zdroje thead th {
+	min-width: 40px;
+	height: 30px;
+}
+table.zdroje thead th:nth-child(1) {
+	position: relative;
+	display: block;
+	height: 30px;
+	min-width: 200px;
+	max-width: 200px;
+}
+table.zdroje tbody {
+	position: relative;
+	display: block;
+	overflow: scroll;
+}
+table.zdroje tbody td {
+	min-width: 40px;
+}
+table.zdroje tbody tr td:nth-child(1) {
+	position: relative;
+	display: block;
+	height: 30px;
+	min-width: 200px;
+	max-width: 200px;
+	font-weight: bold;
+}
+.zdroje-unavailability {
+	color: #d9534f;
+		font-weight: bold;
+}
+.zdroje-unavailability:hover,
+.zdroje-unavailability:focus {
+		color: #000;
+		text-decoration: none;
+		cursor: pointer;
+}
+table.zdroje td.highlighted {
+	background-color:#999;
+}

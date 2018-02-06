@@ -1,0 +1,175 @@
+{% extends 'resources/base.html' %}
+{% load staticfiles %}
+
+{% block head %}
+<link rel='stylesheet' href="{% static 'resources/css/webshim.css' %}">
+<link rel='stylesheet' href="{% static 'resources/css/spectrum.css' %}" />
+<style>
+@-webkit-keyframes animatetop {
+	from {top:-300px; opacity:0}
+	to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+	from {top:-300px; opacity:0}
+	to {top:0; opacity:1}
+}
+</style>
+{% endblock %}
+
+{% block navigator %}
+{% include 'resources/navigator.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="w3-container">
+	<div class="modal fade" id="modal" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form form-group" method="post">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Pridať zamestnanca</h4>
+					</div>
+					<div class="modal-body">
+						{% csrf_token %}
+						<input type="hidden" id="id" name="id" value="">
+						<div class="row">
+							<div class="col-sm-12">
+								<label for="name">name</label>
+								<input id="name" type="text" name="name" placeholder="name" style="width: 100%;" required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<label for="team">team</label>
+								<input id="team" type="number" name="team" placeholder="team" min=1 max=99 step=1 style="width: 100%;" required>
+							</div>
+							<div class="col-sm-6">
+								<label for="color">color</label>
+								<div id="color"><input name="color" type='text' id="color-picker"/></div>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-12">
+								<textarea rows="6" style="width: 100%;" name="info"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button id="btn-add" class="btn btn-success" formaction="/resources/employees/add">
+							<span class="glyphicon glyphicon glyphicon-plus">ADD</span>
+						</button>
+						<button id="btn-edit" class="btn btn-info" formaction="/resources/employees/edit">
+							<span class="glyphicon glyphicon glyphicon-pencil">EDIT</span>
+						</button>
+						<button id="btn-edit" class="btn btn-danger" formaction="/resources/employees/delete" onclick="return confirm('Do you really want to delete this employee?')">
+							<span class="glyphicon glyphicon glyphicon-trash">DELETE</span>
+						</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div>
+		<table id="table-employees" class="table table-striped table-bordered" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>name</th>
+					<th>team</th>
+					<th>color</th>
+					<th>info</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for post in data %}
+				<tr id="{{post.id}}" name="{{post.name}}", team="{{post.team}}" color="{{post.color}}" info="{{post.info}}">
+					<td>{{ post.name }}</td>
+					<td onclick="getModal(this);">{{ post.team }}</td>
+					<td onclick="getModal(this);">
+						<svg width="100" height="25">
+							<rect width="100" height="25" style="fill:{{ post.color }}" />
+						</svg>
+					</td>
+					<td onclick="getModal(this);">
+						<pre>{% if post.info != None %}{{ post.info }}{% endif %}</pre>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}
+{% block javascript %}
+<script src="{% static 'resources/js/spectrum.js' %}"></script>
+<script src="{% static 'resources/js/js-webshim/minified/polyfiller.js' %}"></script>
+<script>
+$("#color-picker").spectrum({
+	preferredFormat: "hex",
+	showPaletteOnly: true,
+	togglePaletteOnly: true,
+	togglePaletteMoreText: 'more',
+	togglePaletteLessText: 'less',
+	color: 'blanchedalmond',
+	palette: [
+		["#000","#444","#666","#999","#ccc","#eee","#f3f3f3","#fff"],
+		["#f00","#f90","#ff0","#0f0","#0ff","#00f","#90f","#f0f"],
+		["#f4cccc","#fce5cd","#fff2cc","#d9ead3","#d0e0e3","#cfe2f3","#d9d2e9","#ead1dc"],
+		["#ea9999","#f9cb9c","#ffe599","#b6d7a8","#a2c4c9","#9fc5e8","#b4a7d6","#d5a6bd"],
+		["#e06666","#f6b26b","#ffd966","#93c47d","#76a5af","#6fa8dc","#8e7cc3","#c27ba0"],
+		["#c00","#e69138","#f1c232","#6aa84f","#45818e","#3d85c6","#674ea7","#a64d79"],
+		["#900","#b45f06","#bf9000","#38761d","#134f5c","#0b5394","#351c75","#741b47"],
+		["#600","#783f04","#7f6000","#274e13","#0c343d","#073763","#20124d","#4c1130"]
+	]
+});
+</script>
+<script>
+function removeNone(object){
+	if (object == 'None'){
+		return '';
+	}else{
+		return object;
+	}
+}
+function getInfo(object){
+	$('#id').val(object.getAttribute('id'));
+	$('#name').val(object.getAttribute('name'));
+	$('#team').val(object.getAttribute('team'));
+	$('#color-picker').val(object.getAttribute('color'));
+	document.getElementById("color").childNodes[1].childNodes[0].childNodes[0].style.backgroundColor = object.getAttribute('color');
+	$('#info').val(removeNone(object.getAttribute('info')));
+}
+function getModal(object){
+	getInfo(object.parentNode);
+	$('#btn-add').hide();
+	$('[id="btn-edit"]').show();
+	$('#modal').modal();
+}
+</script>
+<script>
+$('#table-employees').DataTable({
+	dom: 'Bfrtip',
+	buttons: [
+		{
+			text: 'Pridať',
+			action: function ( e, dt, node, config ) {
+				$('#btn-add').show();
+				$('[id="btn-edit"]').hide();
+				$('#modal').modal();
+			}
+		}
+	],
+	responsive: true,
+	"pageLength": 25,
+	"columnDefs": [
+		{
+			"targets": [3],
+			"searchable": false
+		}
+	]
+});
+</script>
+{% endblock %}
