@@ -26,7 +26,7 @@ class employee(models.Model):
 class resource(models.Model):
 	id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
 	employee = models.ForeignKey(employee, on_delete=models.CASCADE)
-	order = models.ForeignKey(order, on_delete=models.CASCADE)
+	order = models.ForeignKey(order, on_delete=models.CASCADE, null=True, blank=True)
 	
 	availability = models.BooleanField()
 	notava = models.CharField(max_length=32, null=True, blank=True)

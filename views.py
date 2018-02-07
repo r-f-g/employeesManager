@@ -2,6 +2,8 @@ from django.shortcuts import render
 from .models import order, employee, resource
 from .library import load
 from django.contrib import messages
+from django.db.models import Q, FloatField
+from django.db.models.functions import Cast, TruncYear, ExtractYear, ExtractMonth, ExtractDay
 
 
 def orders(request):
@@ -30,3 +32,12 @@ def employees(request):
 		elif request.path_info.split('/')[-1] == 'delete':
 			employee.objects.filter(id=request.POST['id']).delete()
 	return render(request, "resources/employees.html", {'data': employee.objects.order_by('team')})
+
+def calendar(request):
+	option = load.resources_option(request)
+	axes = {'orders': order.objects.all().values_list('id','name','color'),
+			'employees': employee.objects.all().values_list('id','name','color')}
+	data = resource.objects.filter(Q(F__range=[option['From'], option['To']])|Q(T__range=[option['From'], option['To']]))\
+				.annotate(From=10000*ExtractYear('F')+100*ExtractMonth('F')+ExtractDay('F'), To=10000*ExtractYear('T')+100*ExtractMonth('T')+ExtractDay('T') ,hours_f=Cast('hours', FloatField()))\
+				.values_list('employee', 'order', 'availability', 'notava', 'From', 'To', 'hours_f')
+	return render(request, "resources/calendar.html", {'axes': axes, 'option': option, 'data': data})

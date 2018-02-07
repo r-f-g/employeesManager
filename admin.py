@@ -8,10 +8,16 @@ class resourceAdmin(admin.ModelAdmin):
 	list_per_page = 25
 
 	def employee_name(self, instance):
-		return instance.employee.name
+		try:
+			return instance.employee.name
+		except:
+			return None
 
 	def order_name(self, instance):
-		return instance.order.name
+		try:
+			return instance.order.name
+		except:
+			return None
 
 admin.site.register(resource, resourceAdmin)
 
