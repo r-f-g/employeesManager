@@ -2,9 +2,9 @@ function load(data){
 	return JSON.parse(data.replace('<QuerySet ','').replace('>','').replace(/None/g,null).replace(/True/g,true).replace(/False/g,false).replace(/'/g,'"').replace(/\(/g,"[").replace(/\)/g,"]"));
 }
 
-function resourcesHighlighted(name, startDate, endDate){
+function resourcesHighlighted(id, startDate, endDate){
 	$("table.resources td.resourcesBody").removeClass('highlighted');
-	var row = $("table.resources td.resourcesBody, [ename='"+name+"']");
+	var row = $("table.resources td.resourcesBody, [id='"+id+"']");
 	var s = new Date(startDate);
 	var e = new Date(endDate);
 	var n = resourcesGetNumberOfDays(s, e);
@@ -222,7 +222,7 @@ function resourcesTableBody(table, date, employees, tresources, orders){
 						var oHTML = "<td class='resourcesBody' type='working' date='"+d[0]+"' "+dstyle+"><svg width='38'height='25' viewBox='0 0 38 25' style='display: block;'>";
 						var w = 38/tresources[employee[0]][d[0]]["orders"].length;
 						tresources[employee[0]][d[0]]["orders"].forEach(function (ord, i){
-							oHTML += "<rect x='"+i*w+"' width='"+w+"' height='25' style='fill:"+orders[ord[0]]['color']+";opacity: 0.6;'/>";
+							oHTML += "<rect x='"+i*w+"' width='"+w+"' height='25' style='fill:"+orders[ord[0]]['color']+";'/>";
 						});
 						if (tresources[employee[0]][d[0]]["hours"].toString().length > 3) {
 							oHTML += "<text x='0' y='17' font-family='Verdana' font-size='12' fill='black' style='font-weight: bold;'>"+tresources[employee[0]][d[0]]["hours"]+"</text></svg></td>";	
@@ -260,29 +260,32 @@ function shModalOption(object) {
 }
 
 function showModalInfoTable(id, from, to){
+	$('#modal_employee').val(id);
 	var start = new Date(from);
 	var end = new Date(to);
-	while (start <= end){
-		var date = resourcesDate(start, 0);
-		if (date in tresources[id]){
-			tresources[id][date]['orders'].forEach(function(order){
-				var row = document.getElementById("modal_info_table").tBodies[0].insertRow(-1);
-				var cell = row.insertCell(-1);
-				cell.outerHTML = "<td>"+date+"</td>";
-				var cell = row.insertCell(-1);
-				if (tresources[id][date]['availability']){
-					cell.outerHTML = "<td>"+orders[order[0]]['name']+"</td>";
+	if (id in tresources) {
+		while (start <= end) {
+			var date = resourcesDate(start, 0);
+			if (date in tresources[id]){
+				tresources[id][date]['orders'].forEach(function(order){
+					var row = document.getElementById("modal_info_table").tBodies[0].insertRow(-1);
 					var cell = row.insertCell(-1);
-					row.style.backgroundColor = orders[order[0]]['color'];
-					cell.outerHTML = "<td>"+tresources[id][date]['hours']+"</td>";
-				}else{
-					cell.outerHTML = "<td></td>";
+					cell.outerHTML = "<td>"+date+"</td>";
 					var cell = row.insertCell(-1);
-					cell.outerHTML = "<td>"+tresources[id][date]['symbol']+"</td>";
-				}
-			});
+					if (tresources[id][date]['availability']){
+						cell.outerHTML = "<td>"+orders[order[0]]['name']+"</td>";
+						var cell = row.insertCell(-1);
+						row.style.backgroundColor = orders[order[0]]['color'];
+						cell.outerHTML = "<td>"+order[1]+"</td>";
+					}else{
+						cell.outerHTML = "<td></td>";
+						var cell = row.insertCell(-1);
+						cell.outerHTML = "<td>"+tresources[id][date]['symbol']+"</td>";
+					}
+				});
+			}
+			start.addDays(1);
 		}
-		start.addDays(1);
 	}
 	$('#modal_info_table').show();
 }

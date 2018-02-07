@@ -7,7 +7,7 @@ class order(models.Model):
 	name = models.CharField(max_length=255)
 	short = models.CharField(max_length=255, null=True, blank=True)
 	status = models.BooleanField(default=True)
-	color = models.CharField(max_length=12, default='#dadaf2')
+	color = models.CharField(max_length=12, default='#ffbb7f')
 	info = models.TextField(null=True, blank=True)
 
 	def __str__(self):
@@ -17,7 +17,7 @@ class employee(models.Model):
 	id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
 	name = models.CharField(max_length=255)
 	team = models.PositiveSmallIntegerField(default=1)
-	color = models.CharField(max_length=12, default='#4286f4')
+	color = models.CharField(max_length=12, default='#ffffff')
 	info = models.TextField(null=True, blank=True)
 
 	def __str__(self):

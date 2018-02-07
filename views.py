@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from .models import order, employee, resource
-from .library import load
+from .library import moduls
 from django.contrib import messages
 from django.db.models import Q, FloatField
 from django.db.models.functions import Cast, TruncYear, ExtractYear, ExtractMonth, ExtractDay
-
+import datetime
 
 def orders(request):
 	if request.method == 'POST':
@@ -18,7 +18,7 @@ def orders(request):
 			order.objects.filter(id=request.POST['id']).update(**update)
 		elif resource.path_info.split('/')[-1] == 'delete':
 			order.objects.filter(id=request.POST['id']).delete()
-	data, select_status = load.orders(request)
+	data, select_status = moduls.orders(request)
 	return render(request, "resources/orders.html", {'data': data, 'filter_status':select_status})
 
 def employees(request):
@@ -34,7 +34,16 @@ def employees(request):
 	return render(request, "resources/employees.html", {'data': employee.objects.order_by('team')})
 
 def calendar(request):
-	option = load.resources_option(request)
+	if request.method == 'POST':
+		if request.path_info.split('/')[-1] == 'add':
+			if moduls.testAvailability(request) == False:
+				messages.info(request, 'Employee is unavailable at this time.')
+			else:
+				create = {c:moduls.calendarDataConvert(c, request) for c in ['F','T','employee','order','availability','notava','hours']}
+				resource.objects.create(**create)
+		elif request.path_info.split('/')[-1] == 'delete':
+			moduls.removeResources(request)
+	option = moduls.resources_option(request)
 	axes = {'orders': order.objects.all().values_list('id','name','color'),
 			'employees': employee.objects.all().values_list('id','name','color')}
 	data = resource.objects.filter(Q(F__range=[option['From'], option['To']])|Q(T__range=[option['From'], option['To']]))\

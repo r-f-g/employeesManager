@@ -36,15 +36,15 @@
 					{% csrf_token %}
 					<input type="hidden" name="From" value="{{option.From|date:"Y-m-d"}}">
 					<input type="hidden" name="To" value="{{option.To|date:"Y-m-d"}}">
-					<input type="hidden" name="id" value="">
+					<input id= "modal_employee" type="hidden" name="employee" value="">
 					<div class="row">
 						<div class="col-sm-6">
 							<label for="modal_from">From:</label>
-							<input id="modal_from" type="date" data-date-inline-picker="false" data-date-open-on-focus="true" value="{{request.POST.from}}" placeholder="from" name="from">
+							<input id="modal_from" type="date" data-date-inline-picker="false" data-date-open-on-focus="true" value="{{request.POST.from}}" placeholder="from" name="F">
 						</div>
 						<div class="col-sm-6">
 							<label for="modal_to">To:</label>
-							<input id="modal_to" type="date" data-date-inline-picker="false" data-date-open-on-focus="true" value="{{request.POST.to}}" placeholder="to" name="to">
+							<input id="modal_to" type="date" data-date-inline-picker="false" data-date-open-on-focus="true" value="{{request.POST.to}}" placeholder="to" name="T">
 						</div>
 					</div>
 					<hr>
@@ -60,13 +60,13 @@
 						</div>
 						<div class="col-sm-6" id="modal_order">
 							<label for="modal_hours">Hours:</label>
-							<div id="modal_hours"><input type="number" name="hours" step="0.5" min="0" max="24" placeholder="hodiny"></div>
+							<div id="modal_hours"><input type="number" name="hours" value="0" step="0.5" min="0" max="24" placeholder="hodiny"></div>
 						</div>
 					</div>
 					<br>
 					<div class="row" id="modal_order">
 						<div class="col-sm-12">
-							<select id="select_order" name="IDO" style="width: 100%;">
+							<select id="select_order" name="order" style="width: 100%;">
 							</select>
 						</div>
 					</div>
@@ -84,6 +84,12 @@
 					</table>
 				</div>
 				<div class="modal-footer">
+					<button id="btn-add" class="btn btn-success" formaction="/resources/calendar/add">
+						<span class="glyphicon glyphicon glyphicon-plus">ADD</span>
+					</button>
+					<button id="btn-edit" class="btn btn-danger" formaction="/resources/calendar/delete" onclick="return confirm('Do you really want to delete this?')">
+							<span class="glyphicon glyphicon glyphicon-trash">DELETE</span>
+						</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</form>
@@ -185,14 +191,14 @@ $(function () {
 		$("table.resources td.resourcesBody")
 		.mousedown(function () {
 			isMouseDown = true;
-			selectEmployee = $(this).parent().attr('ename');
+			selectEmployee = $(this).parent().attr('id');
 			startDate = $(this).attr('date');
 			endDate = $(this).attr('date');
 			$(this).toggleClass("highlighted");
 			return false; // prevent text selection
 		})
 		.mouseover(function () {
-			if (selectEmployee == $(this).parent().attr('ename')) {
+			if (selectEmployee == $(this).parent().attr('id')) {
 				endDate = $(this).attr('date');
 				reverse = resourcesHighlighted(selectEmployee, startDate, endDate);
 			}

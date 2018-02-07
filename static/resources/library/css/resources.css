@@ -53,5 +53,5 @@ table.resources tbody tr td:nth-child(1) {
 	cursor: pointer;
 }
 table.resources td.highlighted {
-	background-color:#999;
+	background-color: rgb(24, 66, 135);
 }
