@@ -170,9 +170,11 @@ $(function () {
 		employees = load("{{axes.employees|safe}}");
 		load("{{axes.orders|safe}}").forEach(function (order) {
 			if (!(order[0] in orders)) {
-				$('#select_order').append($("<option></option>")
+				if(order[3]){
+					$('#select_order').append($("<option></option>")
 							.attr("value",order[0])
 							.text(order[1]));
+				}
 				orders[order[0]] = {};
 			}
 			orders[order[0]] = {'name':order[1], 'color':order[2]}

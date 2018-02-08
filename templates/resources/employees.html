@@ -53,7 +53,8 @@
 						<hr>
 						<div class="row">
 							<div class="col-sm-12">
-								<textarea rows="6" style="width: 100%;" name="info"></textarea>
+								<label for="info">info</label>
+								<textarea id="info" rows="6" style="width: 100%;" name="info"></textarea>
 							</div>
 						</div>
 					</div>
@@ -154,7 +155,7 @@ $('#table-employees').DataTable({
 	dom: 'Bfrtip',
 	buttons: [
 		{
-			text: 'Pridať',
+			text: 'ADD',
 			action: function ( e, dt, node, config ) {
 				$('#btn-add').show();
 				$('[id="btn-edit"]').hide();
