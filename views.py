@@ -44,9 +44,9 @@ def calendar(request):
 		elif request.path_info.split('/')[-1] == 'delete':
 			moduls.removeResources(request)
 	option = moduls.resources_option(request)
-	axes = {'orders': order.objects.all().values_list('id','name','color', 'status'),
-			'employees': employee.objects.all().order_by('team').values_list('id','name','color')}
-	data = resource.objects.filter(Q(F__range=[option['From'], option['To']])|Q(T__range=[option['From'], option['To']]))\
+	axes = {'orders': list(order.objects.all().values_list('id','name','color', 'status')),
+			'employees': list(employee.objects.all().order_by('team').values_list('id','name','color'))}
+	data = list(resource.objects.filter(Q(F__range=[option['From'], option['To']])|Q(T__range=[option['From'], option['To']]))\
 				.annotate(From=10000*ExtractYear('F')+100*ExtractMonth('F')+ExtractDay('F'), To=10000*ExtractYear('T')+100*ExtractMonth('T')+ExtractDay('T') ,hours_f=Cast('hours', FloatField()))\
-				.values_list('employee', 'order', 'availability', 'notava', 'From', 'To', 'hours_f')
+				.values_list('employee', 'order', 'availability', 'notava', 'From', 'To', 'hours_f'))
 	return render(request, "resources/calendar.html", {'axes': axes, 'option': option, 'data': data})
